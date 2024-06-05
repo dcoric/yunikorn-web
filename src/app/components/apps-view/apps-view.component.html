@@ -145,6 +145,9 @@
       <mat-drawer-content>
         <div class="header">
           <span>{{ selectedRow?.applicationId }} ({{ selectedRow?.allocations?.length }} allocations)</span>
+          <a href="/#/applications?partition={{partitionSelected}}&queue={{leafQueueSelected}}&applicationId={{selectedRow?.applicationId}}">
+            <span class="far fa-solid fa-link copy-btn" (click)="copyLinkToClipboard()"></span>
+          </a>
           <span class="far fa-solid fa-xmark close-btn" (click)="closeDrawer()"></span>
         </div>
         <div class="content">
