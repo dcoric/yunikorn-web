@@ -67,7 +67,7 @@ export class AppsViewComponent implements OnInit {
   leafQueueSelected = '';
 
   detailToggle: boolean = false;
-  allocationsToggle: boolean = false;
+  allocationsToggle: number = -1;
 
   constructor(
     private scheduler: SchedulerService,
@@ -84,27 +84,31 @@ export class AppsViewComponent implements OnInit {
     this.appSort.sort({ id: 'submissionTime', start: 'desc', disableClear: false });
 
     this.appColumnDef = [
-      { colId: 'applicationId', colName: 'Application ID' },
-      { colId: 'applicationState', colName: 'Application State' },
+      { colId: 'applicationId', colName: 'Application ID', colWidth: 1 },
+      { colId: 'applicationState', colName: 'Application State', colWidth: 1 },
       {
         colId: 'lastStateChangeTime',
         colName: 'Last State Change Time',
         colFormatter: CommonUtil.timeColumnFormatter,
+        colWidth: 1,
       },
       {
         colId: 'usedResource',
         colName: 'Used Resource',
         colFormatter: CommonUtil.resourceColumnFormatter,
+        colWidth: 2,
       },
       {
         colId: 'pendingResource',
         colName: 'Pending Resource',
         colFormatter: CommonUtil.resourceColumnFormatter,
+        colWidth: 2,
       },
       {
         colId: 'submissionTime',
         colName: 'Submission Time',
         colFormatter: CommonUtil.timeColumnFormatter,
+        colWidth: 1,
       },
     ];
 
@@ -396,8 +400,11 @@ export class AppsViewComponent implements OnInit {
     this.detailToggle = !this.detailToggle;
   }
 
-  allocationsDetailToggle() {
-    this.allocationsToggle = !this.allocationsToggle;
+  allocationsDetailToggle(row: number) {
+    console.log('Clicked', { row, selectedRow: this.allocationsToggle });
+
+    if (this.allocationsToggle === row) this.allocationsToggle = -1;
+    else this.allocationsToggle = row;
   }
 
   closeDrawer() {
