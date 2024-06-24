@@ -1,3 +1,4 @@
 {
-  "localSchedulerWebAddress": "http://localhost:9889"
+  "localSchedulerWebAddress": "http://localhost:9889",
+  "externalLogsURL": "https://localhost:4200"
 }

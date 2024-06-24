@@ -35,6 +35,7 @@ import { SchedulerService } from '@app/services/scheduler/scheduler.service';
 import { MockNgxSpinnerService, MockSchedulerService } from '@app/testing/mocks';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { of } from 'rxjs';
+import { HttpClientTestingModule } from '@angular/common/http/testing';
 
 import { AppsViewComponent } from './apps-view.component';
 
@@ -57,6 +58,7 @@ describe('AppsViewComponent', () => {
         MatTooltipModule,
         MatSelectModule,
         MatSidenavModule,
+        HttpClientTestingModule,
       ],
       providers: [
         { provide: SchedulerService, useValue: MockSchedulerService },
@@ -99,13 +101,5 @@ describe('AppsViewComponent', () => {
     expect(
       debugEl.query(By.css('mat-cell.mat-column-pendingResource')).nativeElement.innerText
     ).toContain('Memory: 0.0 bytes\nCPU: 0\npods: n/a');
-  });
-
-  it('should copy the allocations URL to clipboard', () => {
-    const debugEl: DebugElement = fixture.debugElement;
-    const copyButton = debugEl.query(By.css('.copy-btn'));
-    const copyButtonSpy = spyOn(component, 'copyLinkToClipboard');
-    copyButton.triggerEventHandler('click', null);
-    expect(copyButtonSpy).toHaveBeenCalled();
   });
 });

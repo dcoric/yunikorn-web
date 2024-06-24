@@ -18,4 +18,5 @@
 
 export interface EnvConfig {
   localSchedulerWebAddress: string;
+  externalLogsURL?: string;
 }

@@ -40,6 +40,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatDrawerContainer } from '@angular/material/sidenav';
 
 import { AppRoutingModule } from '@app/app-routing.module';
 import { envConfigFactory, EnvconfigService } from '@app/services/envconfig/envconfig.service';
@@ -63,6 +64,8 @@ import { HealthchecksComponent } from '@app/components/healthchecks/healthchecks
 import { AppNodeUtilizationsComponent } from '@app/components/app-node-utilizations/app-node-utilizations.component';
 import { VerticalBarChartComponent } from '@app/components/vertical-bar-chart/vertical-bar-chart.component';
 import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-modal.component';
+import { AllocationsDrawerComponent } from '@app/components/allocations-drawer/allocations-drawer.component';
+import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-drawer-with-logs/allocations-drawer-with-logs.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +88,8 @@ import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-
     AppNodeUtilizationsComponent,
     VerticalBarChartComponent,
     LicensesModalComponent,
+    AllocationsDrawerComponent,
+    AllocationsDrawerWithLogsComponent,
   ],
   imports: [
     BrowserModule,

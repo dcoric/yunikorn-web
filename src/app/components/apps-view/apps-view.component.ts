@@ -16,7 +16,14 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ViewChild,
+  ElementRef,
+  ViewContainerRef,
+  ComponentRef,
+} from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
@@ -34,7 +41,9 @@ import { CommonUtil } from '@app/utils/common.util';
 import { PartitionInfo } from '@app/models/partition-info.model';
 import { DropdownItem } from '@app/models/dropdown-item.model';
 import { QueueInfo } from '@app/models/queue-info.model';
-import { MatDrawer } from '@angular/material/sidenav';
+import { AllocationsDrawerComponent } from '@app/components/allocations-drawer/allocations-drawer.component';
+import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-drawer-with-logs/allocations-drawer-with-logs.component';
+import { EnvconfigService } from '@app/services/envconfig/envconfig.service';
 
 @Component({
   selector: 'app-applications-view',
@@ -48,7 +57,8 @@ export class AppsViewComponent implements OnInit {
   @ViewChild('allocSort', { static: true }) allocSort!: MatSort;
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
   @ViewChild('queueSelect', { static: false }) queueSelect!: MatSelect;
-  @ViewChild('matDrawer', { static: false }) matDrawer!: MatDrawer;
+  @ViewChild('drawerContainer', { read: ViewContainerRef, static: true })
+  drawerContainer!: ViewContainerRef;
 
   appDataSource = new MatTableDataSource<AppInfo>([]);
   appColumnDef: ColumnDef[] = [];
@@ -67,13 +77,14 @@ export class AppsViewComponent implements OnInit {
   leafQueueSelected = '';
 
   detailToggle: boolean = false;
-  allocationsToggle: boolean = false;
+  allocationsDrawerComponent: ComponentRef<AllocationsDrawerComponent> | undefined = undefined;
 
   constructor(
     private scheduler: SchedulerService,
     private spinner: NgxSpinnerService,
     private activatedRoute: ActivatedRoute,
-    private router: Router
+    private router: Router,
+    private envConfig: EnvconfigService
   ) {}
 
   ngOnInit() {
@@ -154,6 +165,30 @@ export class AppsViewComponent implements OnInit {
           this.clearQueueSelection();
         }
       });
+
+    this.initializeSidebarComponent();
+  }
+
+  initializeSidebarComponent() {
+    this.drawerContainer.clear();
+    this.allocationsDrawerComponent = this.envConfig.getExternalLogsBaseUrl()
+      ? this.drawerContainer.createComponent(AllocationsDrawerWithLogsComponent)
+      : this.drawerContainer.createComponent(AllocationsDrawerComponent);
+
+    console.log(this.envConfig.getExternalLogsBaseUrl());
+
+    this.allocationsDrawerComponent.setInput('selectedRow', this.selectedRow);
+    this.allocationsDrawerComponent.setInput('allocDataSource', this.allocDataSource);
+    this.allocationsDrawerComponent.setInput('partitionSelected', this.partitionSelected);
+    this.allocationsDrawerComponent.setInput('leafQueueSelected', this.leafQueueSelected);
+    if (this.envConfig.getExternalLogsBaseUrl())
+      this.allocationsDrawerComponent.setInput(
+        'externalLogsBaseUrl',
+        this.envConfig.getExternalLogsBaseUrl()
+      );
+    this.allocationsDrawerComponent.instance.removeRowSelection.subscribe(() => {
+      this.removeRowSelection();
+    });
   }
 
   fetchQueuesForPartition(partitionName: string) {
@@ -277,10 +312,12 @@ export class AppsViewComponent implements OnInit {
     } else {
       this.selectedRow = row;
       row.isSelected = true;
-      this.matDrawer.open();
       if (row.allocations) {
         this.allocDataSource.data = row.allocations;
       }
+      this.allocationsDrawerComponent?.setInput('selectedRow', this.selectedRow);
+      this.allocationsDrawerComponent?.setInput('allocDataSource', this.allocDataSource);
+      this.allocationsDrawerComponent?.instance.openDrawer();
     }
   }
 
@@ -298,10 +335,6 @@ export class AppsViewComponent implements OnInit {
 
   isAppDataSourceEmpty() {
     return this.appDataSource.data && this.appDataSource.data.length === 0;
-  }
-
-  isAllocDataSourceEmpty() {
-    return this.allocDataSource.data && this.allocDataSource.data.length === 0;
   }
 
   onClearSearch() {
@@ -394,22 +427,5 @@ export class AppsViewComponent implements OnInit {
 
   toggle() {
     this.detailToggle = !this.detailToggle;
-  }
-
-  allocationsDetailToggle() {
-    this.allocationsToggle = !this.allocationsToggle;
-  }
-
-  closeDrawer() {
-    this.matDrawer.close();
-    this.removeRowSelection();
-  }
-
-  copyLinkToClipboard() {
-    const url = window.location.href.split('?')[0];
-    const copyString = `${url}?partition=${this.partitionSelected}&queue=${this.leafQueueSelected}&applicationId=${this?.selectedRow?.applicationId}`;
-    navigator.clipboard
-      .writeText(copyString)
-      .catch((error) => console.error('Writing to the clipboard is not allowed. ', error));
   }
 }
