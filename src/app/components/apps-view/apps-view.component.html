@@ -59,32 +59,35 @@
   <div class="mat-elevation-z8">
     <mat-table [dataSource]="appDataSource" matSort #appSort="matSort">
       <ng-container [matColumnDef]="columnDef.colId" *ngFor="let columnDef of appColumnDef">
-        <mat-header-cell *matHeaderCellDef mat-sort-header>{{ columnDef.colName }}</mat-header-cell>
+        <mat-header-cell *matHeaderCellDef mat-sort-header [style.flex]="columnDef.colWidth || 1">{{ columnDef.colName
+          }}</mat-header-cell>
 
         <ng-container *ngIf="columnDef.colId === 'submissionTime'; else renderNext_1">
-          <mat-cell *matCellDef="let element">{{ element['formattedSubmissionTime'] }}</mat-cell>
+          <mat-cell *matCellDef="let element" [style.flex]="columnDef.colWidth || 1">{{
+            element['formattedSubmissionTime'] }}</mat-cell>
         </ng-container>
 
         <ng-container *ngIf="columnDef.colId === 'lastStateChangeTime'; else renderNext_1">
-          <mat-cell *matCellDef="let element">{{ element['formattedlastStateChangeTime'] }}</mat-cell>
+          <mat-cell *matCellDef="let element" [style.flex]="columnDef.colWidth || 1">{{
+            element['formattedlastStateChangeTime'] }}</mat-cell>
         </ng-container>
 
         <ng-template #renderNext_1>
           <ng-container
             *ngIf="columnDef.colId === 'usedResource' || columnDef.colId === 'pendingResource'; else renderNext_1">
-            <mat-cell *matCellDef="let element">
+            <mat-cell *matCellDef="let element" [style.flex]="columnDef.colWidth || 1">
               <ng-container *ngIf="columnDef.colFormatter; else showAppRawData">
                 <ng-container *ngIf="columnDef.colFormatter(element[columnDef.colId]) as colValue">
-                  <ul class="mat-res-ul">
+                  <mat-chip-set aria-label="Resources">
                     <ng-container *ngFor="let resource of formatResources(colValue); let i = index">
-                      <li class="mat-res-li" *ngIf="i<2">
+                      <mat-chip class="mat-chip" *ngIf="i<2">
                         {{ resource }}
-                      </li>
-                      <li class="mat-res-li" *ngIf="i>=2 && detailToggle">
+                      </mat-chip>
+                      <mat-chip class="mat-chip" *ngIf="i>=2 && detailToggle">
                         {{ resource }}
-                      </li>
+                      </mat-chip>
                     </ng-container>
-                  </ul>
+                  </mat-chip-set>
                 </ng-container>
               </ng-container>
               <ng-template #showAppRawData>
@@ -125,17 +128,18 @@
 
       <mat-header-row *matHeaderRowDef="appColumnIds"></mat-header-row>
 
-      <mat-row *matRowDef="let row; columns: appColumnIds" [class.selected-row]="selectedRow === row"
-        (click)="toggleRowSelection(row)"></mat-row>
+      <mat-row *matRowDef="let row; columns: appColumnIds; let i = index" [class.selected-row]="selectedRow === row"
+        (click)="toggleRowSelection(row)" [ngClass]="{'even-row': i % 2 === 0, 'row': true}"></mat-row>
 
       <mat-footer-row *matFooterRowDef="['noRecord']"
         [ngStyle]="{ display: isAppDataSourceEmpty() ? '' : 'none' }"></mat-footer-row>
     </mat-table>
 
-    <mat-paginator #appsViewMatPaginator [pageSizeOptions]="[10, 20, 50, 100]"
+    <mat-paginator #appsViewMatPaginator [pageSizeOptions]="[10, 20, 50, 100]" pageSize="50"
       [ngStyle]="{ display: isAppDataSourceEmpty() ? 'none' : '' }" (page)="onPaginatorChanged()"
       showFirstLastButtons></mat-paginator>
   </div>
   <ng-container #drawerContainer></ng-container>
+
 
 </div>

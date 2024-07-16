@@ -34,7 +34,7 @@
 
             <ng-container *ngIf="columnDef.colId === 'priority'; else renderNext_3">
               <mat-cell class="small" *matCellDef="let element" [style.flex]="columnDef?.colWidth || 1"
-                [style.min-height]="allocationsToggle ? '96px' : 'unset'" [title]="element[columnDef.colId]">{{
+                [title]="element[columnDef.colId]">{{
                 element['priority'] }} </mat-cell>
             </ng-container>
 
@@ -49,7 +49,7 @@
                         <li class="mat-res-li" *ngIf="i<1">
                           {{ resource }}
                         </li>
-                        <li class="mat-res-li" *ngIf="i>=1 && allocationsToggle">
+                        <li class="mat-res-li" *ngIf="i>=1 && element['expanded']">
                           {{ resource }}
                         </li>
                       </ng-container>
@@ -63,9 +63,9 @@
             </ng-container>
 
             <ng-template #renderNext_3>
-              <mat-cell *matCellDef="let element" [class]="allocationsToggle ? '' : 'ellipsis'"
-                [style.flex]="columnDef?.colWidth || 1" [style.min-height]="allocationsToggle ? '96px' : 'unset'"
-                matTooltip="{{element[columnDef.colId]}}" matTooltipShowDelay="500">{{ element[columnDef.colId] || 'n/a'
+              <mat-cell *matCellDef="let element" [class]="element['expanded'] ? '' : 'ellipsis'"
+                [style.flex]="columnDef?.colWidth || 1" matTooltip="{{element[columnDef.colId]}}"
+                matTooltipShowDelay="500">{{ element[columnDef.colId] || 'n/a'
                 }}</mat-cell>
             </ng-template>
           </ng-container>
@@ -78,14 +78,14 @@
 
           <mat-header-row *matHeaderRowDef="allocColumnIds"></mat-header-row>
 
-          <mat-row *matRowDef="let row; columns: allocColumnIds; let i = index" (click)="allocationsDetailToggle()"
+          <mat-row *matRowDef="let row; columns: allocColumnIds; let i = index" (click)="allocationsDetailToggle(i)"
             [ngClass]="{'even-row': i % 2 === 0, 'row': true}"></mat-row>
 
           <mat-footer-row *matFooterRowDef="['noRecord']"
             [ngStyle]="{ display: isAllocDataSourceEmpty() ? '' : 'none' }"></mat-footer-row>
         </mat-table>
 
-        <mat-paginator #allocationMatPaginator [pageSizeOptions]="[10, 20, 50, 100]"
+        <mat-paginator #allocationMatPaginator [pageSizeOptions]="[10, 20, 50, 100]" [pageSize]="50"
           [ngStyle]="{ display: isAllocDataSourceEmpty() ? 'none' : '' }" showFirstLastButtons></mat-paginator>
 
       </div>

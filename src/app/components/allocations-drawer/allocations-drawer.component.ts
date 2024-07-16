@@ -35,7 +35,7 @@ export class AllocationsDrawerComponent implements OnInit {
   @ViewChild('matDrawer', { static: false }) matDrawer!: MatDrawer;
   @ViewChild('allocationMatPaginator', { static: true }) allocPaginator!: MatPaginator;
   @ViewChild('allocSort', { static: true }) allocSort!: MatSort;
-  @Input() allocDataSource!: MatTableDataSource<AllocationInfo>;
+  @Input() allocDataSource!: MatTableDataSource<AllocationInfo & { expanded: boolean }>;
   @Input() selectedRow!: AppInfo | null;
   @Input() partitionSelected!: string;
   @Input() leafQueueSelected!: string;
@@ -44,7 +44,7 @@ export class AllocationsDrawerComponent implements OnInit {
 
   allocColumnDef: ColumnDef[] = [];
   allocColumnIds: string[] = [];
-  allocationsToggle: boolean = false;
+  selectedAllocationsRow: number = -1;
 
   ngOnChanges(): void {
     if (this.allocDataSource) {
@@ -97,11 +97,25 @@ export class AllocationsDrawerComponent implements OnInit {
     return this.allocDataSource?.data && this.allocDataSource.data.length === 0;
   }
 
-  allocationsDetailToggle() {
-    this.allocationsToggle = !this.allocationsToggle;
+  allocationsDetailToggle(row: number) {
+    console.log({ row, selectedAllocationsRow: this.selectedAllocationsRow });
+    if (this.selectedAllocationsRow !== -1) {
+      if (this.selectedAllocationsRow !== row) {
+        this.allocDataSource.data[this.selectedAllocationsRow].expanded = false;
+        this.selectedAllocationsRow = row;
+        this.allocDataSource.data[row].expanded = true;
+      } else {
+        this.allocDataSource.data[this.selectedAllocationsRow].expanded = false;
+        this.selectedAllocationsRow = -1;
+      }
+    } else {
+      this.selectedAllocationsRow = row;
+      this.allocDataSource.data[row].expanded = true;
+    }
   }
 
   closeDrawer() {
+    this.selectedAllocationsRow = -1;
     this.matDrawer.close();
     this.removeRowSelection.emit();
   }

@@ -16,15 +16,15 @@
  * limitations under the License.
  */
 
-import { Component, OnInit, ViewChild, Input, Output, EventEmitter } from '@angular/core';
-import { AppInfo } from '@app/models/app-info.model';
+import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { MatPaginator } from '@angular/material/paginator';
-import { MatSort } from '@angular/material/sort';
 import { MatDrawer } from '@angular/material/sidenav';
+import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { AllocationInfo } from '@app/models/alloc-info.model';
-import { CommonUtil } from '@app/utils/common.util';
+import { AppInfo } from '@app/models/app-info.model';
 import { ColumnDef } from '@app/models/column-def.model';
+import { CommonUtil } from '@app/utils/common.util';
 
 @Component({
   selector: 'app-allocations-drawer-with-logs',
@@ -35,7 +35,7 @@ export class AllocationsDrawerWithLogsComponent implements OnInit {
   @ViewChild('matDrawer', { static: false }) matDrawer!: MatDrawer;
   @ViewChild('allocationMatPaginator', { static: true }) allocPaginator!: MatPaginator;
   @ViewChild('allocSort', { static: true }) allocSort!: MatSort;
-  @Input() allocDataSource!: MatTableDataSource<AllocationInfo>;
+  @Input() allocDataSource!: MatTableDataSource<AllocationInfo & { expanded: boolean }>;
   @Input() selectedRow!: AppInfo | null;
   @Input() externalLogsBaseUrl!: string | null;
   @Input() partitionSelected!: string;
@@ -45,7 +45,7 @@ export class AllocationsDrawerWithLogsComponent implements OnInit {
 
   allocColumnDef: ColumnDef[] = [];
   allocColumnIds: string[] = [];
-  allocationsToggle: boolean = false;
+  selectedAllocationsRow: number = -1;
 
   ngOnChanges(): void {
     if (this.allocDataSource) {
@@ -104,11 +104,25 @@ export class AllocationsDrawerWithLogsComponent implements OnInit {
     return this.allocDataSource?.data && this.allocDataSource.data.length === 0;
   }
 
-  allocationsDetailToggle() {
-    this.allocationsToggle = !this.allocationsToggle;
+  allocationsDetailToggle(row: number) {
+    console.log({ row, selectedAllocationsRow: this.selectedAllocationsRow });
+    if (this.selectedAllocationsRow !== -1) {
+      if (this.selectedAllocationsRow !== row) {
+        this.allocDataSource.data[this.selectedAllocationsRow].expanded = false;
+        this.selectedAllocationsRow = row;
+        this.allocDataSource.data[row].expanded = true;
+      } else {
+        this.allocDataSource.data[this.selectedAllocationsRow].expanded = false;
+        this.selectedAllocationsRow = -1;
+      }
+    } else {
+      this.selectedAllocationsRow = row;
+      this.allocDataSource.data[row].expanded = true;
+    }
   }
 
   closeDrawer() {
+    this.selectedAllocationsRow = -1;
     this.matDrawer.close();
     this.removeRowSelection.emit();
   }

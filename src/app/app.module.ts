@@ -65,6 +65,7 @@ import { VerticalBarChartComponent } from '@app/components/vertical-bar-chart/ve
 import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-modal.component';
 import { AllocationsDrawerComponent } from '@app/components/allocations-drawer/allocations-drawer.component';
 import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-drawer-with-logs/allocations-drawer-with-logs.component';
+import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
   declarations: [
@@ -115,6 +116,7 @@ import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-
     MatExpansionModule,
     MatIconModule,
     MatDialogModule,
+    MatChipsModule,
   ],
   providers: [
     {
