@@ -31,8 +31,13 @@ import { By, HAMMER_LOADER } from '@angular/platform-browser';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { RouterTestingModule } from '@angular/router/testing';
 import { AppInfo } from '@app/models/app-info.model';
+import { EnvconfigService } from '@app/services/envconfig/envconfig.service';
 import { SchedulerService } from '@app/services/scheduler/scheduler.service';
-import { MockNgxSpinnerService, MockSchedulerService } from '@app/testing/mocks';
+import {
+  MockEnvconfigService,
+  MockNgxSpinnerService,
+  MockSchedulerService,
+} from '@app/testing/mocks';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { of } from 'rxjs';
 
@@ -62,10 +67,12 @@ describe('AppsViewComponent', () => {
         { provide: SchedulerService, useValue: MockSchedulerService },
         { provide: NgxSpinnerService, useValue: MockNgxSpinnerService },
         { provide: HAMMER_LOADER, useValue: () => new Promise(() => {}) },
+        { provide: EnvconfigService, useValue: MockEnvconfigService },
       ],
     }).compileComponents();
     fixture = TestBed.createComponent(AppsViewComponent);
     component = fixture.componentInstance;
+    spyOn(component, 'initializeSidebarComponent').and.callFake(() => {});
     fixture.detectChanges();
   });
 
@@ -99,13 +106,5 @@ describe('AppsViewComponent', () => {
     expect(
       debugEl.query(By.css('mat-cell.mat-column-pendingResource')).nativeElement.innerText
     ).toContain('Memory: 0.0 bytes\nCPU: 0\npods: n/a');
-  });
-
-  it('should copy the allocations URL to clipboard', () => {
-    const debugEl: DebugElement = fixture.debugElement;
-    const copyButton = debugEl.query(By.css('.copy-btn'));
-    const copyButtonSpy = spyOn(component, 'copyLinkToClipboard');
-    copyButton.triggerEventHandler('click', null);
-    expect(copyButtonSpy).toHaveBeenCalled();
   });
 });

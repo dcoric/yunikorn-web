@@ -63,6 +63,8 @@ import { HealthchecksComponent } from '@app/components/healthchecks/healthchecks
 import { AppNodeUtilizationsComponent } from '@app/components/app-node-utilizations/app-node-utilizations.component';
 import { VerticalBarChartComponent } from '@app/components/vertical-bar-chart/vertical-bar-chart.component';
 import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-modal.component';
+import { AllocationsDrawerComponent } from '@app/components/allocations-drawer/allocations-drawer.component';
+import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-drawer-with-logs/allocations-drawer-with-logs.component';
 
 @NgModule({
   declarations: [
@@ -85,6 +87,8 @@ import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-
     AppNodeUtilizationsComponent,
     VerticalBarChartComponent,
     LicensesModalComponent,
+    AllocationsDrawerComponent,
+    AllocationsDrawerWithLogsComponent,
   ],
   imports: [
     BrowserModule,

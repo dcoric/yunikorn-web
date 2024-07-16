@@ -63,4 +63,8 @@ export class EnvconfigService {
 
     return `${this.uiProtocol}//${this.uiHostname}:${this.uiPort}`;
   }
+
+  getExternalLogsBaseUrl() {
+    return this.envConfig.externalLogsURL;
+  }
 }
