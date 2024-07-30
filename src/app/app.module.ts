@@ -64,7 +64,6 @@ import { AppNodeUtilizationsComponent } from '@app/components/app-node-utilizati
 import { VerticalBarChartComponent } from '@app/components/vertical-bar-chart/vertical-bar-chart.component';
 import { LicensesModalComponent } from '@app/components/licenses-modal/licenses-modal.component';
 import { AllocationsDrawerComponent } from '@app/components/allocations-drawer/allocations-drawer.component';
-import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-drawer-with-logs/allocations-drawer-with-logs.component';
 import { MatChipsModule } from '@angular/material/chips';
 
 @NgModule({
@@ -89,7 +88,6 @@ import { MatChipsModule } from '@angular/material/chips';
     VerticalBarChartComponent,
     LicensesModalComponent,
     AllocationsDrawerComponent,
-    AllocationsDrawerWithLogsComponent,
   ],
   imports: [
     BrowserModule,

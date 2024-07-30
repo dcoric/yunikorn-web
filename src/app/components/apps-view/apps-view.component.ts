@@ -29,7 +29,6 @@ import { MatSelect, MatSelectChange } from '@angular/material/select';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AllocationsDrawerWithLogsComponent } from '@app/components/allocations-drawer-with-logs/allocations-drawer-with-logs.component';
 import { AllocationsDrawerComponent } from '@app/components/allocations-drawer/allocations-drawer.component';
 import { AllocationInfo } from '@app/models/alloc-info.model';
 import { AppInfo } from '@app/models/app-info.model';
@@ -43,6 +42,10 @@ import { CommonUtil } from '@app/utils/common.util';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { fromEvent } from 'rxjs';
 import { debounceTime, distinctUntilChanged, finalize } from 'rxjs/operators';
+import {
+  loadRemoteModule,
+  LoadRemoteModuleEsmOptions,
+} from '@angular-architects/module-federation';
 
 @Component({
   selector: 'app-applications-view',
@@ -56,8 +59,12 @@ export class AppsViewComponent implements OnInit {
   @ViewChild('allocSort', { static: true }) allocSort!: MatSort;
   @ViewChild('searchInput', { static: true }) searchInput!: ElementRef;
   @ViewChild('queueSelect', { static: false }) queueSelect!: MatSelect;
+
   @ViewChild('drawerContainer', { read: ViewContainerRef, static: true })
   drawerContainer!: ViewContainerRef;
+
+  @ViewChild('mfeContainer', { read: ViewContainerRef, static: true })
+  mfeContainer!: ViewContainerRef;
 
   appDataSource = new MatTableDataSource<AppInfo>([]);
   appColumnDef: ColumnDef[] = [];
@@ -77,7 +84,6 @@ export class AppsViewComponent implements OnInit {
 
   detailToggle: boolean = false;
   allocationsDrawerComponent: ComponentRef<AllocationsDrawerComponent> | undefined = undefined;
-  allocationsToggle: number = -1;
 
   constructor(
     private scheduler: SchedulerService,
@@ -170,24 +176,27 @@ export class AppsViewComponent implements OnInit {
         }
       });
 
-    this.initializeSidebarComponent();
+    this.initializeSidebarComponent(
+      this.envConfig.getAllocationsDrawerComponentRemoteConfig()
+    ).catch(console.error);
   }
 
-  initializeSidebarComponent() {
+  async initializeSidebarComponent(remoteComponentConfig: LoadRemoteModuleEsmOptions | null) {
+    let component = AllocationsDrawerComponent;
+
+    if (remoteComponentConfig !== null) {
+      const { AllocationsDrawerComponent: allocationsDrawerComponent } =
+        await loadRemoteModule(remoteComponentConfig);
+      component = allocationsDrawerComponent;
+    }
+
     this.drawerContainer.clear();
-    this.allocationsDrawerComponent = !!this.envConfig.getExternalLogsBaseUrl()
-      ? this.drawerContainer.createComponent(AllocationsDrawerWithLogsComponent)
-      : this.drawerContainer.createComponent(AllocationsDrawerComponent);
+    this.allocationsDrawerComponent = this.drawerContainer.createComponent(component);
 
     this.allocationsDrawerComponent.setInput('selectedRow', this.selectedRow);
     this.allocationsDrawerComponent.setInput('allocDataSource', this.allocDataSource);
     this.allocationsDrawerComponent.setInput('partitionSelected', this.partitionSelected);
     this.allocationsDrawerComponent.setInput('leafQueueSelected', this.leafQueueSelected);
-    if (this.envConfig.getExternalLogsBaseUrl())
-      this.allocationsDrawerComponent.setInput(
-        'externalLogsBaseUrl',
-        this.envConfig.getExternalLogsBaseUrl()
-      );
     this.allocationsDrawerComponent.instance.removeRowSelection.subscribe(() => {
       this.removeRowSelection();
     });
@@ -412,9 +421,7 @@ export class AppsViewComponent implements OnInit {
     const otherElements = arr.filter(
       (item) => !item.toLowerCase().includes('CPU') && !item.toLowerCase().includes('Memory')
     );
-    const result = cpuAndMemoryElements.concat(otherElements);
-
-    return result;
+    return cpuAndMemoryElements.concat(otherElements);
   }
 
   clearQueueSelection() {

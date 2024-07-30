@@ -78,7 +78,7 @@
             <mat-cell *matCellDef="let element" [style.flex]="columnDef.colWidth || 1">
               <ng-container *ngIf="columnDef.colFormatter; else showAppRawData">
                 <ng-container *ngIf="columnDef.colFormatter(element[columnDef.colId]) as colValue">
-                  <mat-chip-set aria-label="Resources">
+                  <mat-chip-set aria-label="Resources" [attr.data-test]="formatResources(colValue)">
                     <ng-container *ngFor="let resource of formatResources(colValue); let i = index">
                       <mat-chip class="mat-chip" *ngIf="i<2">
                         {{ resource }}
@@ -140,6 +140,7 @@
       showFirstLastButtons></mat-paginator>
   </div>
   <ng-container #drawerContainer></ng-container>
+  <ng-container #mfeContainer></ng-container>
 
 
 </div>

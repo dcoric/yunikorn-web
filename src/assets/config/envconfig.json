@@ -1,4 +1,5 @@
 {
   "localSchedulerWebAddress": "http://localhost:9889",
-  "externalLogsURL": "https://logs.example.com?token=abc123&applicationId="
+  "moduleFederationRemoteEntry": "",
+  "allocationsDrawerRemoteComponent": ""
 }

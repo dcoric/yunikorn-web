@@ -33,6 +33,8 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppInfo } from '@app/models/app-info.model';
 import { EnvconfigService } from '@app/services/envconfig/envconfig.service';
 import { SchedulerService } from '@app/services/scheduler/scheduler.service';
+import { MatChipsModule } from '@angular/material/chips';
+
 import {
   MockEnvconfigService,
   MockNgxSpinnerService,
@@ -62,6 +64,7 @@ describe('AppsViewComponent', () => {
         MatTooltipModule,
         MatSelectModule,
         MatSidenavModule,
+        MatChipsModule,
       ],
       providers: [
         { provide: SchedulerService, useValue: MockSchedulerService },
@@ -72,7 +75,9 @@ describe('AppsViewComponent', () => {
     }).compileComponents();
     fixture = TestBed.createComponent(AppsViewComponent);
     component = fixture.componentInstance;
-    spyOn(component, 'initializeSidebarComponent').and.callFake(() => {});
+    spyOn(component, 'initializeSidebarComponent').and.callFake(
+      (b = null) => new Promise(() => {})
+    );
     fixture.detectChanges();
   });
 
@@ -80,7 +85,7 @@ describe('AppsViewComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should have usedResource and pendingResource column', () => {
+  it('should have usedResource and pendingResource column with detailToggle OFF', () => {
     let service: SchedulerService;
     service = TestBed.inject(SchedulerService);
     let appInfo = new AppInfo(
@@ -97,14 +102,45 @@ describe('AppsViewComponent', () => {
     );
     spyOn(service, 'fetchAppList').and.returnValue(of([appInfo]));
     component.fetchAppListForPartitionAndQueue('default', 'root');
-    component.toggle();
     fixture.detectChanges();
     const debugEl: DebugElement = fixture.debugElement;
     expect(
-      debugEl.query(By.css('mat-cell.mat-column-usedResource')).nativeElement.innerText
+      debugEl.query(By.css('[data-test="Memory: 500.0 KB,CPU: 10,pods: 1"]')).nativeElement
+        .innerText
+    ).toContain('Memory: 500.0 KB\nCPU: 10');
+    expect(
+      debugEl.query(By.css('[data-test="Memory: 0.0 bytes,CPU: 0,pods: n/a"]')).nativeElement
+        .innerText
+    ).toContain('Memory: 0.0 bytes\nCPU: 0');
+  });
+
+  it('should have usedResource and pendingResource column with detailToggle ON', () => {
+    let service: SchedulerService;
+    service = TestBed.inject(SchedulerService);
+    let appInfo = new AppInfo(
+      'app1',
+      'Memory: 500.0 KB, CPU: 10, pods: 1',
+      'Memory: 0.0 bytes, CPU: 0, pods: n/a',
+      '',
+      1,
+      2,
+      [],
+      2,
+      'RUNNING',
+      []
+    );
+    spyOn(service, 'fetchAppList').and.returnValue(of([appInfo]));
+    component.fetchAppListForPartitionAndQueue('default', 'root');
+    component.detailToggle = true;
+    fixture.detectChanges();
+    const debugEl: DebugElement = fixture.debugElement;
+    expect(
+      debugEl.query(By.css('[data-test="Memory: 500.0 KB,CPU: 10,pods: 1"]')).nativeElement
+        .innerText
     ).toContain('Memory: 500.0 KB\nCPU: 10\npods: 1');
     expect(
-      debugEl.query(By.css('mat-cell.mat-column-pendingResource')).nativeElement.innerText
+      debugEl.query(By.css('[data-test="Memory: 0.0 bytes,CPU: 0,pods: n/a"]')).nativeElement
+        .innerText
     ).toContain('Memory: 0.0 bytes\nCPU: 0\npods: n/a');
   });
 });
