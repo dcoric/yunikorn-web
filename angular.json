@@ -75,10 +75,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "yunikorn-web:build:production"
+              "buildTarget": "yunikorn-web:build:production"
             },
             "development": {
-              "browserTarget": "yunikorn-web:build:development"
+              "buildTarget": "yunikorn-web:build:development"
             }
           },
           "defaultConfiguration": "development"
@@ -86,7 +86,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "yunikorn-web:build"
+            "buildTarget": "yunikorn-web:build"
           }
         },
         "test": {
