@@ -86,11 +86,11 @@
           "builder": "ngx-build-plus:dev-server",
           "configurations": {
             "production": {
-              "browserTarget": "yunikorn-web:build:production",
+              "buildTarget": "yunikorn-web:build:production"
               "extraWebpackConfig": "webpack.prod.config.js"
             },
             "development": {
-              "browserTarget": "yunikorn-web:build:development"
+              "buildTarget": "yunikorn-web:build:development"
             }
           },
           "defaultConfiguration": "development",
@@ -103,7 +103,7 @@
         "extract-i18n": {
           "builder": "ngx-build-plus:extract-i18n",
           "options": {
-            "browserTarget": "yunikorn-web:build",
+            "buildTarget": "yunikorn-web:build"
             "extraWebpackConfig": "webpack.config.js"
           }
         },
