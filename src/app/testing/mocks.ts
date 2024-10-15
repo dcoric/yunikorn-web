@@ -17,11 +17,14 @@
  */
 
 import { of } from 'rxjs';
-import { AppInfo } from '@app/models/app-info.model';
-import { CommonUtil } from '@app/utils/common.util';
+import { LoadRemoteModuleEsmOptions } from '@angular-architects/module-federation';
 
 export const noopFn = () => {};
 export const nullFn = () => null;
+
+export const MockModuleFederationService = {
+  loadRemoteModule: (config: LoadRemoteModuleEsmOptions) => of({}),
+};
 
 export const MockSchedulerService = {
   fetchClusterByName: () => of({}),
