@@ -1,6 +1,7 @@
 import { Injectable, Injector } from '@angular/core';
-import { loadRemoteModule, LoadRemoteModuleEsmOptions } from '@angular-architects/module-federation';
+import { LoadRemoteModuleEsmOptions } from '@angular-architects/module-federation';
 import { SchedulerService } from './scheduler.service';
+import { ModuleFederationWrapper } from '@app/utils/moduleFederationWrapper';
 
 @Injectable({
   providedIn: 'root',
@@ -11,7 +12,7 @@ export class SchedulerServiceLoader {
   async initializeSchedulerService(remoteComponentConfig: LoadRemoteModuleEsmOptions | null): Promise<SchedulerService | null> {
     if (remoteComponentConfig !== null) {
       try {
-        const remoteModule = await loadRemoteModule(remoteComponentConfig);
+        const remoteModule = await ModuleFederationWrapper.loadRemoteModule(remoteComponentConfig);
         if (remoteModule && remoteModule.SchedulerService) {
           console.log("remote module", remoteModule.SchedulerService);
           return this.injector.get(remoteModule.SchedulerService);
