@@ -97,8 +97,9 @@ export class AppsViewComponent implements OnInit {
 
   async ngOnInit() {
     const remoteConfig = this.envConfig.getSchedulerServiceRemoteConfig();
-    const remoteScheduler = await this.schedulerServiceLoader.initializeSchedulerService(remoteConfig);
-    this.scheduler = remoteScheduler? remoteScheduler: this.scheduler;
+    const remoteScheduler =
+      await this.schedulerServiceLoader.initializeSchedulerService(remoteConfig);
+    this.scheduler = remoteScheduler ? remoteScheduler : this.scheduler;
     this.appDataSource.paginator = this.appPaginator;
     this.allocDataSource.paginator = this.allocPaginator;
     this.appDataSource.sort = this.appSort;
@@ -269,7 +270,8 @@ export class AppsViewComponent implements OnInit {
     applicationId?: string
   ) {
     this.spinner.show();
-    
+
+    console.log(this.scheduler);
     this.scheduler
       .fetchAppList(partitionName, queueName)
       .pipe(

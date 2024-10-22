@@ -52,7 +52,7 @@ module.exports = function (config) {
     },
     reporters: ['spec'],
     specReporter: {
-      maxLogLines: 5, // limit number of lines logged per test
+      maxLogLines: 15, // limit number of lines logged per test
       suppressErrorSummary: true, // do not print error summary
       suppressFailed: false, // do not print information about failed tests
       suppressPassed: false, // do not print information about passed tests
@@ -62,9 +62,8 @@ module.exports = function (config) {
     },
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['ChromeHeadless'],
+    autoWatch: false,
+    browsers: ['Chrome'],
     captureTimeout: 180000,
     browserDisconnectTolerance: 3,
     browserDisconnectTimeout: 180000,

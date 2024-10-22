@@ -9,12 +9,14 @@ import { ModuleFederationWrapper } from '@app/utils/moduleFederationWrapper';
 export class SchedulerServiceLoader {
   constructor(private injector: Injector) {}
 
-  async initializeSchedulerService(remoteComponentConfig: LoadRemoteModuleEsmOptions | null): Promise<SchedulerService | null> {
+  async initializeSchedulerService(
+    remoteComponentConfig: LoadRemoteModuleEsmOptions | null
+  ): Promise<SchedulerService | null> {
     if (remoteComponentConfig !== null) {
       try {
         const remoteModule = await ModuleFederationWrapper.loadRemoteModule(remoteComponentConfig);
         if (remoteModule && remoteModule.SchedulerService) {
-          console.log("remote module", remoteModule.SchedulerService);
+          console.log('remote module', remoteModule.SchedulerService);
           return this.injector.get(remoteModule.SchedulerService);
         } else {
           console.error('SchedulerService not found.');
@@ -25,6 +27,7 @@ export class SchedulerServiceLoader {
         return null;
       }
     }
+    console.log('Remote component config is null.');
     return null;
   }
 }
