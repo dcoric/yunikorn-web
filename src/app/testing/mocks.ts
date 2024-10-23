@@ -16,9 +16,15 @@
  * limitations under the License.
  */
 
-import { of } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { LoadRemoteModuleEsmOptions } from '@angular-architects/module-federation';
-import { SchedulerServiceLoader } from '@app/services/scheduler/scheduler-loader.service';
+import { QueueInfo } from '@app/models/queue-info.model';
+import { AppInfo } from '@app/models/app-info.model';
+import { ClusterInfo } from '@app/models/cluster-info.model';
+import { HistoryInfo } from '@app/models/history-info.model';
+import { NodeInfo } from '@app/models/node-info.model';
+import { NodeUtilizationsInfo } from '@app/models/node-utilization.model';
+import { Partition } from '@app/models/partition-info.model';
 
 export const noopFn = () => {};
 export const nullFn = () => null;
@@ -27,17 +33,51 @@ export const MockModuleFederationService = {
   loadRemoteModule: (config: LoadRemoteModuleEsmOptions) => of({}),
 };
 
-export const MockSchedulerService = {
-  fetchClusterByName: () => of({}),
-  fetchClusterList: () => of([]),
-  fetchPartitionList: () => of([]),
-  fetchSchedulerQueues: () => of({}),
-  fetchAppList: () => of([]),
-  fetchAppHistory: () => of([]),
-  fetchContainerHistory: () => of([]),
-  fetchNodeList: () => of([]),
-  fecthHealthchecks: () => of([]),
-};
+
+  export class MockSchedulerService {
+    fetchAppList(partitionName: string, queueName: string): Observable<AppInfo[]> {
+      return of([
+        new AppInfo('app1', 'Description 1', '...', '...', 1, 1, [], 1, 'RUNNING', []),
+        new AppInfo('app2', 'Description 2', '...', '...', 2, 2, [], 2, 'FAILED', []),
+      ]);
+    }
+  
+    fetchClusterList(): Observable<ClusterInfo[]> {
+      return of();
+    }
+  
+    fetchPartitionList(): Observable<Partition[]> {
+      return of();
+    }
+  
+    fetchSchedulerQueues(partitionName: string): Observable<{ rootQueue: QueueInfo }> {
+      const rootQueue = new QueueInfo();
+      rootQueue.queueName = 'rootQueue';
+      rootQueue.status = 'RUNNING';
+      rootQueue.isLeaf = false;
+      rootQueue.isManaged = true;
+      rootQueue.partitionName = partitionName;
+      rootQueue.children = []; // Add mock child queues as needed
+  
+      return of({ rootQueue });
+    }
+  
+    fetchAppHistory(): Observable<HistoryInfo[]> {
+      return of();
+    }
+  
+    fetchContainerHistory(): Observable<HistoryInfo[]> {
+      return of();
+    }
+  
+    fetchNodeList(partitionName: string): Observable<NodeInfo[]> {
+      return of();
+    }
+  
+    fetchNodeUtilizationsInfo(): Observable<NodeUtilizationsInfo[]> {
+      return of();
+    }
+  }
 
 export const MockNgxSpinnerService = {
   show: noopFn,
@@ -57,7 +97,9 @@ export const MockEventBusService = {
 
 export const MockSchedulerServiceLoader = {
   loadScheduler: () => of(MockSchedulerService),
-  initializeSchedulerService: () => of(MockSchedulerService),
+  initializeSchedulerService(remoteConfig: any): Promise<MockSchedulerService> {
+    return Promise.resolve(new MockSchedulerService());
+  },
   fetchClusterByName: () => of({}),
   fetchClusterList: () => of([]),
   fetchPartitionList: () => of([]),
@@ -65,4 +107,16 @@ export const MockSchedulerServiceLoader = {
   fetchAppList: () => of([]),
   fetchAppHistory: () => of([]),
   fetchContainerHistory: () => of([]),
+};
+
+export const MockActivatedRoute = {
+  snapshot: {
+    paramMap: {
+      get: () => 'mockParam', // Provide whatever parameters you need here
+    },
+  },
+};
+
+export const MockRouter = {
+  navigate: jasmine.createSpy('navigate'), // Mock navigate function
 };

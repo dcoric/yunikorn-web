@@ -36,8 +36,10 @@ import { SchedulerService } from '@app/services/scheduler/scheduler.service';
 import { MatChipsModule } from '@angular/material/chips';
 
 import {
+  MockActivatedRoute,
   MockEnvconfigService,
   MockNgxSpinnerService,
+  MockRouter,
   MockSchedulerService,
   MockSchedulerServiceLoader,
 } from '@app/testing/mocks';
@@ -46,12 +48,14 @@ import { of } from 'rxjs';
 
 import { AppsViewComponent } from './apps-view.component';
 import { SchedulerServiceLoader } from '@app/services/scheduler/scheduler-loader.service';
+import { ActivatedRoute, Router } from '@angular/router';
 
 describe('AppsViewComponent', () => {
   let component: AppsViewComponent;
   let fixture: ComponentFixture<AppsViewComponent>;
+  let service: MockSchedulerService;
 
-  beforeEach(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       declarations: [AppsViewComponent],
       imports: [
@@ -69,10 +73,12 @@ describe('AppsViewComponent', () => {
         MatChipsModule,
       ],
       providers: [
-        { provide: SchedulerService, useValue: MockSchedulerService },
+        { provide: SchedulerService, useClass: MockSchedulerService },
         { provide: SchedulerServiceLoader, useValue: MockSchedulerServiceLoader },
         { provide: NgxSpinnerService, useValue: MockNgxSpinnerService },
         { provide: HAMMER_LOADER, useValue: () => new Promise(() => {}) },
+        { provide: ActivatedRoute, useValue: MockActivatedRoute },
+        { provide: Router, useValue: MockRouter },
         { provide: EnvconfigService, useValue: MockEnvconfigService },
       ],
     }).compileComponents();
@@ -81,6 +87,7 @@ describe('AppsViewComponent', () => {
     spyOn(component, 'initializeSidebarComponent').and.callFake(
       (b = null) => new Promise(() => {})
     );
+    service = TestBed.inject(SchedulerService);
     fixture.detectChanges();
   });
 
@@ -89,8 +96,6 @@ describe('AppsViewComponent', () => {
   });
 
   it('should have usedResource and pendingResource column with detailToggle OFF', async () => {
-    let service: SchedulerService;
-    service = TestBed.inject(SchedulerService);
     let appInfo = new AppInfo(
       'app1',
       'Memory: 500.0 KB, CPU: 10, pods: 1',
@@ -103,8 +108,7 @@ describe('AppsViewComponent', () => {
       'RUNNING',
       []
     );
-    spyOn(service, 'fetchAppList').and.returnValue(of([appInfo]));
-    spyOn(service, 'fetchPartitionList').and.returnValue(of([]));
+    spyOn(service, 'fetchAppList').and.returnValue(of([]));
 
     await component.fetchAppListForPartitionAndQueue('default', 'root');
     fixture.detectChanges();
